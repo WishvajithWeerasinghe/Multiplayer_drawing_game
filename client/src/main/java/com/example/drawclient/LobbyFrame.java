@@ -31,7 +31,7 @@ public class LobbyFrame extends JFrame {
         this.api = api;
 
         JTextField nameField = new JTextField();
-        JButton create = new JButton("Create a board");
+        JButton create = new JButton("Create board");
         create.addActionListener(e -> createBoard(nameField.getText()));
         nameField.addActionListener(e -> createBoard(nameField.getText()));
 
