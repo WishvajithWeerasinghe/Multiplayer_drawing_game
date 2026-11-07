@@ -1,11 +1,23 @@
 package com.example.drawclient;
 
-import com.example.drawclient.Models.BoardInfo;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import com.example.drawclient.Models.BoardInfo;
 
 /** Start window: list boards, create a new one, open one. */
 public class LobbyFrame extends JFrame {
@@ -19,7 +31,7 @@ public class LobbyFrame extends JFrame {
         this.api = api;
 
         JTextField nameField = new JTextField();
-        JButton create = new JButton("Create board");
+        JButton create = new JButton("Create a board");
         create.addActionListener(e -> createBoard(nameField.getText()));
         nameField.addActionListener(e -> createBoard(nameField.getText()));
 
