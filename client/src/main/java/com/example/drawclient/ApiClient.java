@@ -15,7 +15,7 @@ import java.util.Map;
 
 /** REST calls to the Spring Boot server (java.net.http, no extra libs). */
 public class ApiClient {
-    private final String baseUrl; // e.g. http://localhost:8080
+    private final String baseUrl; // e.g. http://localhost:8081
     private final HttpClient http = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
