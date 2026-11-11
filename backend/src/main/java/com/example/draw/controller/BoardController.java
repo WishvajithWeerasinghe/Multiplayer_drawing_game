@@ -3,6 +3,7 @@ package com.example.draw.controller;
 import com.example.draw.model.Board;
 import com.example.draw.repo.BoardRepository;
 import com.example.draw.repo.StrokeRepository;
+import com.example.draw.service.BoardRoomService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -16,21 +17,24 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/boards")
 public class BoardController {
 
-    public record BoardDto(UUID id, String name, String createdAt) {}
+    public record BoardDto(UUID id, String name, String roomCode, String createdAt) {}
     public record StrokeDto(String id, String userId, String color, int size, JsonNode points) {}
 
     private final BoardRepository boards;
     private final StrokeRepository strokes;
     private final ObjectMapper mapper;
+    private final BoardRoomService boardRooms;
 
-    public BoardController(BoardRepository boards, StrokeRepository strokes, ObjectMapper mapper) {
+    public BoardController(BoardRepository boards, StrokeRepository strokes, ObjectMapper mapper,
+                           BoardRoomService boardRooms) {
         this.boards = boards;
         this.strokes = strokes;
         this.mapper = mapper;
+        this.boardRooms = boardRooms;
     }
 
     private static BoardDto dto(Board b) {
-        return new BoardDto(b.getId(), b.getName(), b.getCreatedAt().toString());
+        return new BoardDto(b.getId(), b.getName(), b.getRoomCode(), b.getCreatedAt().toString());
     }
 
     @GetMapping
@@ -43,7 +47,7 @@ public class BoardController {
     public BoardDto create(@RequestBody Map<String, String> body) {
         String name = body.getOrDefault("name", "").trim();
         if (name.isEmpty()) name = "Untitled board";
-        return dto(boards.save(new Board(name)));
+        return dto(boardRooms.createRoom(name));
     }
 
     @GetMapping("/{id}")

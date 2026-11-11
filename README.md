@@ -23,12 +23,17 @@ bash run.sh
 ```
 
 This starts PostgreSQL and the backend, then opens `http://localhost:8081` in
-your browser. The browser UI is authored in Java with Vaadin; it provides board
-creation, drawing tools, saved strokes, and live collaboration. Share the board
-URL with collaborators. The launcher reuses an existing backend on port 8081.
+your browser. Choose Collaborative Whiteboard to create a room or join with its
+six-digit room number; the whiteboard shows your name and room number, and its
+toolbar is on the left. The dashboard also has a Draw & Guess room-entry dialog;
+that game is not implemented yet. The browser UI is authored in Java with
+Vaadin. Share the whiteboard invite link with collaborators. The launcher reuses
+an existing backend on port 8081.
 Backend startup logs are saved to `.run/backend.log`. Press Ctrl+C to stop a
 backend started by this launcher; an existing backend and the database remain
 running. Run `docker compose down` to stop the database.
+If an older app still occupies port 8081, the launcher leaves it running and
+starts this UI on the next available port (for example, 8082).
 
 PostgreSQL is exposed on host port 5433; the backend uses port 8081 to avoid
 common local service conflicts. To run the components manually, use separate
@@ -62,7 +67,10 @@ example:
 ALLOWED_ORIGINS="http://localhost:8081,http://127.0.0.1:8081,http://192.168.1.20:8081" bash run.sh
 ```
 
-Create a board in one browser, then open its shared link in another browser to draw together.
+Create a whiteboard room from the dashboard or join with its six-digit code.
+Share the invite link so collaborators can enter the room with their own names.
+The Draw & Guess card currently provides only its room-entry dialog; its game UI
+is intentionally not implemented yet.
 
 The client launcher clears native library overrides inherited from Snap-based
 IDEs, preventing GTK/GLIBC library conflicts. You can also run

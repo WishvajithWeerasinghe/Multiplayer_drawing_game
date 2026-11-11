@@ -10,7 +10,8 @@ for command in docker java mvn curl setsid; do
   fi
 done
 
-server_url="http://localhost:${SERVER_PORT:-8081}"
+server_port="${SERVER_PORT:-8081}"
+server_url="http://localhost:$server_port"
 backend_pid=""
 cleanup() {
   if [[ -n "$backend_pid" ]]; then
@@ -25,9 +26,13 @@ trap 'exit 143' TERM
 
 backend_ready() {
   local response
-  response=$(curl --noproxy '*' -fsS --max-time 2 "$server_url/api/boards" 2>/dev/null) || return 1
-  [[ "$response" == \[*\] ]] || return 1
+  response=$(curl --noproxy '*' -fsS --max-time 2 "$server_url/api/app-info" 2>/dev/null) || return 1
+  [[ "$response" =~ \"uiVersion\"[[:space:]]*:[[:space:]]*2 ]] || return 1
   curl --noproxy '*' -fsS --max-time 2 "$server_url/" >/dev/null 2>&1
+}
+
+port_in_use() {
+  curl --noproxy '*' -sS --max-time 1 -o /dev/null "$1/" >/dev/null 2>&1
 }
 
 echo "Starting PostgreSQL..."
@@ -49,9 +54,37 @@ fi
 if backend_ready; then
   echo "Using the backend already running at $server_url."
 else
+  if port_in_use "$server_url"; then
+    echo "A different or older app is using port $server_port; leaving it running."
+    base_port="$server_port"
+    found_port=false
+    for ((offset = 1; offset <= 20; offset++)); do
+      candidate_port=$((base_port + offset))
+      candidate_url="http://localhost:$candidate_port"
+      if ! port_in_use "$candidate_url"; then
+        server_port="$candidate_port"
+        server_url="$candidate_url"
+        found_port=true
+        echo "Starting this version on the available port $server_port."
+        break
+      fi
+    done
+    if [[ "$found_port" != true ]]; then
+      echo "Could not find an available port between $((base_port + 1)) and $((base_port + 20))." >&2
+      exit 1
+    fi
+  fi
   mkdir -p .run
   echo "Starting the backend at $server_url (logs: .run/backend.log)..."
-  setsid mvn -f backend/pom.xml spring-boot:run >.run/backend.log 2>&1 &
+  allowed_origins="${ALLOWED_ORIGINS:-http://localhost:3000}"
+  for origin in "http://localhost:$server_port" "http://127.0.0.1:$server_port"; do
+    case ",$allowed_origins," in
+      *,"$origin",*) ;;
+      *) allowed_origins="$allowed_origins,$origin" ;;
+    esac
+  done
+  SERVER_PORT="$server_port" ALLOWED_ORIGINS="$allowed_origins" \
+    setsid mvn -f backend/pom.xml spring-boot:run >.run/backend.log 2>&1 &
   backend_pid=$!
   server_ready=false
   for ((attempt = 0; attempt < 180; attempt++)); do
