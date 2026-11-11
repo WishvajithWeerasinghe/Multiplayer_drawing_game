@@ -25,8 +25,9 @@ trap 'exit 143' TERM
 
 backend_ready() {
   local response
-  response=$(curl --noproxy '*' -fsS --max-time 2 "$server_url/api/boards") || return 1
-  [[ "$response" == \[*\] ]]
+  response=$(curl --noproxy '*' -fsS --max-time 2 "$server_url/api/boards" 2>/dev/null) || return 1
+  [[ "$response" == \[*\] ]] || return 1
+  curl --noproxy '*' -fsS --max-time 2 "$server_url/" >/dev/null 2>&1
 }
 
 echo "Starting PostgreSQL..."
@@ -72,5 +73,22 @@ else
   fi
 fi
 
-echo "Opening Collab Draw. Close the client or press Ctrl+C to finish."
-bash client/run.sh "-Dexec.args=$server_url"
+echo "Opening Collab Draw in your browser. Press Ctrl+C to finish."
+echo "Browser URL: $server_url"
+if command -v wslview >/dev/null 2>&1; then
+  wslview "$server_url" >/dev/null 2>&1 &
+elif command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$server_url" >/dev/null 2>&1 &
+elif command -v cmd.exe >/dev/null 2>&1; then
+  cmd.exe /c start "" "$server_url" >/dev/null 2>&1 &
+elif command -v powershell.exe >/dev/null 2>&1; then
+  powershell.exe -NoProfile -Command "Start-Process '$server_url'" >/dev/null 2>&1 &
+else
+  echo "Open $server_url in your web browser."
+fi
+
+if [[ -n "$backend_pid" ]]; then
+  wait "$backend_pid"
+else
+  while true; do sleep 3600; done
+fi
