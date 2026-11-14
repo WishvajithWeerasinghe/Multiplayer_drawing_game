@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Doodle Train — a party drawing game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><a class="brand" href="#">✳ Doodle Train</a><span class="online"><i></i><b id="connection">Connecting…</b></span></header>
+    <p id="status-message" class="status-message hidden" role="status" aria-live="polite"></p>
+    <section id="home" class="card home">
+      <div class="eyebrow">•◘○</div><h1>Same message.<br><span>Different story.</span></h1>
+      <p>Join friends in a room. Watch, what you said vs. what actually made it to the end of the line.</p>
+      <form id="join-form" class="join-form"><label>Your Name<input id="player-name" maxlength="18" placeholder="e.g. Doodlebug" required></label><label>Room code<input id="room-code" maxlength="12" placeholder="SUNNY" value="SUNNY" required></label><button class="primary">Join the room <span></span></button></form>
+      <div class="mini-note">Best with 3 or more players. no account needed</div>
+    </section>
+    <section id="lobby" class="card lobby hidden">
+      <div class="room-head"><div><div class="eyebrow">YOUR ROOM</div><h2 id="room-title">Room1</h2></div><button id="copy-room" class="secondary">Copy invite code</button></div>
+      <div class="lobby-content"><div><h3>Players <span id="player-count">0</span></h3><div id="players" class="players"></div></div><aside class="lobby-aside"><div class="stamp">•◘○</div><h3>Ready to doodle?</h3><p>Everyone writes a prompt, then draws and guesses until each player has added to every chain. Keep it friendly, keep it weird.</p><button id="start-game" class="primary" disabled>Start game <span></span></button><small id="host-help">The first player in the room starts the game.</small></aside></div>
+    </section>
+    <section id="game" class="card game hidden">
+      <div class="game-head"><div><div class="eyebrow" id="phase-label"></div><h2 id="phase-title">Write a prompt</h2></div><div class="phase-pills"><span class="active" data-phase-pill="write">Write</span><span data-phase-pill="draw">Draw</span><span data-phase-pill="guess">Guess</span></div></div>
+      <progress id="round-progress" class="round-progress" max="1" value="0" aria-label="Current round"></progress>
+      <p id="instruction" class="instruction"></p>
+      <div id="write-panel" class="panel"><textarea id="prompt-input" maxlength="120" aria-label="Your original prompt" placeholder="A penguin running a pizza shop…"></textarea><button id="submit-prompt" class="primary">Send prompt <span></span></button></div>
+      <div id="draw-panel" class="panel hidden"><div class="given-prompt" id="given-prompt"></div><div class="canvas-wrap"><canvas id="drawing" width="840" height="420"></canvas></div><div class="draw-tools"><label>Ink <input id="ink-color" type="color" value="#302a44"></label><label>Size <input id="ink-size" type="range" min="2" max="24" value="6"></label><button id="clear-canvas" class="secondary">Clear</button><button id="submit-drawing" class="primary">Send drawing <span></span></button></div></div>
+      <div id="guess-panel" class="panel hidden"><div id="given-drawing" class="given-drawing"></div><input id="guess-input" maxlength="120" aria-label="Your guess" placeholder="What do you think this is?"><button id="submit-guess" class="primary">Send guess <span></span></button></div>
+      <p id="submit-status" class="instruction" role="status" aria-live="polite"></p>
+      <div id="waiting" class="waiting hidden"><span class="spinner"></span><div><b>Nice! Your answer is in.</b><p id="waiting-text">Waiting for everyone else…</p></div></div>
+      <div class="game-foot"><div id="game-players" class="tiny-players"></div><span id="submission-count" aria-live="polite">0 / 0 ready</span></div>
+    </section>
+    <section id="results" class="card hidden">
+      <div class="eyebrow">THE BIG REVEAL</div><h2>Look what happened…</h2>
+      <p id="result-summary" class="instruction"></p>
+      <div class="reveal-tools"><button id="expand-chains" class="secondary">Open all chains</button><button id="collapse-chains" class="secondary">Close all chains</button></div>
+      <div id="result-list" class="results-list" role="region" aria-label="Complete prompt histories" tabindex="0"></div>
+      <button id="back-to-lobby" class="primary">Back to room <span></span></button><p id="replay-help" class="instruction"></p>
+    </section>
+    <footer>GROUP<span>10 - 5632 | 5952 | 5985 </span></footer>
+  </main>
+  <dialog id="drawing-dialog" aria-labelledby="drawing-caption"><div class="dialog-head"><h3 id="drawing-caption"></h3><button id="close-drawing" class="secondary" autofocus>Close</button></div><img id="expanded-drawing" alt="Enlarged drawing"></dialog>
+  <script src="app.js"></script>
+</body>
+</html>
