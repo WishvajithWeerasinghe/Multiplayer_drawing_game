@@ -118,7 +118,7 @@ h1, h2, h3, p, button, input {
 
 .portal-choices {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-top: 40px;
 }
@@ -417,6 +417,10 @@ collaborative-canvas canvas {
 
 @media (max-width: 700px) {
   .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-choices {
     grid-template-columns: 1fr;
   }
 
